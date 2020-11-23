@@ -14,6 +14,9 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.IO;
 using Microsoft.Win32;
+using System.Reflection;
+using Excel = Microsoft.Office.Interop.Excel;
+using System.Data;
 
 namespace Lab2
 {
@@ -26,18 +29,19 @@ namespace Lab2
         {
             if (!System.IO.File.Exists("data.xlsx"))
             {
-                UserFilePath.Visibility = Visibility.Visible;
+                
                 SearchButton.Visibility = Visibility.Visible;
                 DownloadButton.Visibility = Visibility.Visible;
-                UpgradeData.Visibility = Visibility.Collapsed;
-                MessageBox.Show("При загрузке программы необходимый файл с базой данных не был найден!\nПожалуйста, загрузите файл из сети Интернет,\nлибо выберите уже существующий на Вашем компьютере!");
+                UpdateData.Visibility = Visibility.Collapsed;
+                
+                MessageBox.Show("При загрузке программы необходимый файл с базой данных не был найден!\nПожалуйста, загрузите файл из сети Интернет,\nлибо выберите уже существующий на Вашем компьютере!", "Ошибка - Нет файла");
             }
             else
             {
-                UserFilePath.Visibility = Visibility.Collapsed;
+                
                 SearchButton.Visibility = Visibility.Collapsed;
                 DownloadButton.Visibility = Visibility.Collapsed;
-                UpgradeData.Visibility = Visibility.Visible;
+                UpdateData.Visibility = Visibility.Visible;
             }
         }
         public MainWindow()
@@ -50,23 +54,66 @@ namespace Lab2
         private void SearchButton_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.DefaultExt = "*.xlsx";
+            openFileDialog.Title = "Выберите документ для загрузки данных";
+
             // Открываем окно диалога с пользователем.
             if (openFileDialog.ShowDialog() == true)
             {
                 // Получаем расширение файла, выбранного пользователем.
                 var extension = System.IO.Path.GetExtension(openFileDialog.FileName);
-                UserFilePath.Text = openFileDialog.FileName;
+                
                 if (extension.ToString() != ".xlsx")
                 {
-                    MessageBox.Show($"Вы выбрали файл с расширением {extension}\nНеобходим файл с расширением .xlsx!");
+                    MessageBox.Show($"Вы выбрали файл с расширением {extension}\nНеобходим файл с расширением .xlsx!", "Ошибка - Неверный тип файла");
                 }
                 else
                 {
-                    var stream = File.Open(openFileDialog.FileName, FileMode.Open, FileAccess.Read);
+                    ParsingFile(openFileDialog.FileName);
                 }
                 
                 
             }
+        }
+        private void ParsingFile(string fileName)
+        {
+            Excel.Application xlApp;
+            Excel.Workbook xlWorkBook;
+            Excel.Worksheet xlWorkSheet;
+            Excel.Range range;
+            List<Bug> l = new List<Bug>();
+            string str;
+            int rCnt;
+            int cCnt;
+            int rw = 0;
+            int cl = 0;
+
+            xlApp = new Excel.Application();
+            xlWorkBook = xlApp.Workbooks.Open(fileName, 0, true, 5, "", "", true, Microsoft.Office.Interop.Excel.XlPlatform.xlWindows, "\t", false, false, 0, true, 1, 0);
+            xlWorkSheet = (Excel.Worksheet)xlWorkBook.Worksheets.get_Item(1);
+
+            range = xlWorkSheet.UsedRange;
+            rw = range.Rows.Count;
+            cl = range.Columns.Count;
+
+
+            for (rCnt = 3; rCnt <= rw; rCnt++)
+            {
+               
+                //for (cCnt = 1; cCnt <= 3; cCnt++)
+                //{
+                //    str = ((range.Cells[rCnt, cCnt] as Excel.Range).Value2).ToString();
+                //    l1.Add(str);
+                //}
+                string id = ((range.Cells[rCnt, 1] as Excel.Range).Value2).ToString();
+                string des = ((range.Cells[rCnt, 2] as Excel.Range).Value2).ToString();
+                string source= ((range.Cells[rCnt, 3] as Excel.Range).Value2).ToString();
+                l.Add(new Bug(id, des, source));
+            }
+
+            xlWorkBook.Close(true, null, null);
+            xlApp.Quit();
+            WholeData.ItemsSource = l;
         }
     }
 }
