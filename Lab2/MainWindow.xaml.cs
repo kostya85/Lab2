@@ -26,6 +26,7 @@ namespace Lab2
     /// </summary>
     public partial class MainWindow : Window
     {
+        public static List<Bug> l = new List<Bug>();
         public void StartWindow()
         {
             if (!System.IO.File.Exists(AppDomain.CurrentDomain.BaseDirectory + "data.xlsx"))
@@ -54,6 +55,18 @@ namespace Lab2
         public MainWindow()
         {
             InitializeComponent();
+            WholeData.AutoGenerateColumns = false;
+            WholeData.Columns.Add(new DataGridTextColumn
+            {
+                Header = "Идентификатор угрозы",
+                Binding = new Binding("Id")
+            });
+
+            WholeData.Columns.Add(new DataGridTextColumn
+            {
+                Header = "Наименование угрозы",
+                Binding = new Binding("Description")
+            });
             StartWindow();
             
         }
@@ -147,7 +160,7 @@ namespace Lab2
                 
                 Excel.Worksheet xlWorkSheet;
                 Excel.Range range;
-                List<Bug> l = new List<Bug>();
+                
                 string str;
                 int rCnt;
                 int cCnt;
@@ -170,10 +183,19 @@ namespace Lab2
                     //    str = ((range.Cells[rCnt, cCnt] as Excel.Range).Value2).ToString();
                     //    l1.Add(str);
                     //}
-                    string id = ((range.Cells[rCnt, 1] as Excel.Range).Value2).ToString();
-                    string des = ((range.Cells[rCnt, 2] as Excel.Range).Value2).ToString();
-                    string source = ((range.Cells[rCnt, 3] as Excel.Range).Value2).ToString();
-                    l.Add(new Bug(id, des, source));
+                    string id = ((range.Cells[rCnt, 1] as Excel.Range).Value).ToString();
+                    string des = ((range.Cells[rCnt, 2] as Excel.Range).Value).ToString();
+                    string fulldes = ((range.Cells[rCnt, 3] as Excel.Range).Value).ToString();
+                    string source = ((range.Cells[rCnt, 4] as Excel.Range).Value).ToString();
+                    string objdanger = ((range.Cells[rCnt, 5] as Excel.Range).Value).ToString();
+                    string confdanger = ((range.Cells[rCnt, 6] as Excel.Range).Value).ToString();
+                    string fulldanger = ((range.Cells[rCnt, 7] as Excel.Range).Value).ToString();
+                    string accessdanger = ((range.Cells[rCnt, 8] as Excel.Range).Value).ToString();
+                    DateTime datestart = ((range.Cells[rCnt, 9] as Excel.Range).Value);
+                    DateTime dateupdate = ((range.Cells[rCnt, 10] as Excel.Range).Value);
+                    
+                    
+                    l.Add(new Bug(id, des, fulldes, source, objdanger, confdanger, fulldanger, accessdanger, datestart,dateupdate));
                 }
 
                
@@ -197,6 +219,78 @@ namespace Lab2
             wc.DownloadFile(url, AppDomain.CurrentDomain.BaseDirectory + "data.xlsx");
             if (CorrectFile(AppDomain.CurrentDomain.BaseDirectory + "data.xlsx")) ParsingFile(AppDomain.CurrentDomain.BaseDirectory + "data.xlsx");
             StartWindow();
+        }
+
+        private void WholeData_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            Bug path = WholeData.SelectedItem as Bug;
+            MessageBox.Show($"Идентификатор угрозы: {path.Id}\nНаименование угрозы: {path.Description}" +
+                $"\nОписание угрозы: {path.FullDescription}\nОбъект воздействия: {path.ObjectDanger}\n" +
+                $"Нарушение конфиденциальности: {path.ConfDanger}","Информация об угрозе "+path.Id);
+        }
+
+        private void ShowTypes(object sender, RoutedEventArgs e)
+        {
+            string fileName = AppDomain.CurrentDomain.BaseDirectory + "data.xlsx";
+            Excel.Application xlApp = new Excel.Application();
+            Excel.Workbook xlWorkBook = xlApp.Workbooks.Open(fileName, 0, true, 5, "", "", true, Microsoft.Office.Interop.Excel.XlPlatform.xlWindows, "\t", false, false, 0, true, 1, 0);
+            
+
+                Excel.Worksheet xlWorkSheet;
+                Excel.Range range;
+                List<string> Types = new List<string>();
+                Type str;
+                int rCnt;
+                int cCnt;
+                int rw = 0;
+                int cl = 0;
+
+
+                xlWorkSheet = (Excel.Worksheet)xlWorkBook.Worksheets.get_Item(1);
+
+                range = xlWorkSheet.UsedRange;
+                rw = range.Rows.Count;
+                cl = range.Columns.Count;
+
+
+
+
+                for (cCnt = 1; cCnt <= cl; cCnt++)
+                {
+                if ((range.Cells[3, cCnt] as Excel.Range).Value is double) {
+
+                    Types.Add($"column {cCnt} is double\n");
+                }
+                else if((range.Cells[3, cCnt] as Excel.Range).Value is string)
+                {
+                    Types.Add($"column {cCnt} is string\n");
+                }
+                else if ((range.Cells[3, cCnt] as Excel.Range).Value is bool)
+                {
+                    Types.Add($"column {cCnt} is bool\n");
+                }
+                else if ((range.Cells[3, cCnt] as Excel.Range).Value is DateTime)
+                {
+                    Types.Add($"column {cCnt} is DateTime\n");
+                }
+                else
+                {
+                    Types.Add($"column {cCnt} is Type\n");
+                }
+
+            }
+
+
+
+
+            xlWorkBook.Close(true, fileName, null);
+            xlApp.Quit();
+
+            string res = "";
+            foreach (var s in Types) res += s;
+            MessageBox.Show(res);
+                
+            
         }
     }
 }

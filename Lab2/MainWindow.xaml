@@ -5,11 +5,18 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Lab2"
         mc:Ignorable="d"
-        Title="Парсер ФСТЭК" Height="720" Width="1080">
+        Title="Парсер ФСТЭК" Height="549" Width="1075.5">
     <Grid Margin="0,0,-525,-44" Height="733" VerticalAlignment="Top" HorizontalAlignment="Left" Width="1597">
-        <Button x:Name="SearchButton" Content="Выбрать файл" Margin="10,417,1279,287" Click="SearchButton_Click"/>
-        <Button x:Name="DownloadButton" Content="Загрузить из Интернет" Margin="10,448,1279,252" Click="DownloadButton_Click"/>
-        <DataGrid x:Name="WholeData" Margin="10,10,534,318"/>
-        <Button x:Name="UpdateData" Content="Обновить данные" Margin="755,420,534,282"/>
+        <Button x:Name="SearchButton" Content="Выбрать файл" Margin="10,475,1384,225" Click="SearchButton_Click"/>
+        <Button x:Name="DownloadButton" Content="Загрузить из Интернет" Margin="218,475,1176,225" Click="DownloadButton_Click"/>
+        <DataGrid x:Name="WholeData" Margin="10,10,534,318" MouseUp="WholeData_MouseUp"/>
+        <Button x:Name="UpdateData" Content="Обновить данные" Margin="860,475,534,225"/>
+        <Button x:Name="SaveData" Content="Сохранить данные" Margin="652,475,742,225"/>
+        <Label Content="Объектов на странице" HorizontalAlignment="Left" Margin="721,420,0,0" VerticalAlignment="Top"/>
+        <ComboBox x:Name="PaginationChoose" HorizontalAlignment="Left" Margin="860,424,0,0" VerticalAlignment="Top" Width="51"/>
+        <Button x:Name="LeftButton" Content="&lt;" HorizontalAlignment="Left" Margin="924,424,0,0" VerticalAlignment="Top" Width="23" Height="22"/>
+        <Button x:Name="RightButton" Content="&gt;" HorizontalAlignment="Left" Margin="982,424,0,0" VerticalAlignment="Top" Width="23" Height="22"/>
+        <Label x:Name="CurrentValue" Content="0-0" HorizontalAlignment="Left" Margin="951,424,0,0" VerticalAlignment="Top" Height="28"/>
+        <Button x:Name="TypesButton" Content="Button" HorizontalAlignment="Left" Margin="10,431,0,0" VerticalAlignment="Top" Width="74" Click="ShowTypes"/>
     </Grid>
 </Window>
