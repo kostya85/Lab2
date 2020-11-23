@@ -45,6 +45,10 @@ namespace Lab2
                 UpdateData.Visibility = Visibility.Visible;
                 if(CorrectFile(AppDomain.CurrentDomain.BaseDirectory + "data.xlsx"))
                 ParsingFile(AppDomain.CurrentDomain.BaseDirectory + "data.xlsx");
+                else
+                {
+                    MessageBox.Show("Выбранный Вами документ не является корректным!", "Ошибка распознавания");
+                }
             }
         }
         public MainWindow()
@@ -76,7 +80,7 @@ namespace Lab2
                     {
                         File.Copy(openFileDialog.FileName, AppDomain.CurrentDomain.BaseDirectory + "data.xlsx");
                         StartWindow();
-                        ParsingFile(AppDomain.CurrentDomain.BaseDirectory + "data.xlsx");
+                        
                     }
                     else
                     {
