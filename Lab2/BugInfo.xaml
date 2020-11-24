@@ -1,0 +1,22 @@
+﻿<Window x:Class="Lab2.BugInfo"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Lab2"
+        mc:Ignorable="d"
+        Title="Информация об угрозе" Height="564.345" Width="1119.672" ResizeMode="NoResize">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Label Content="Общая информация" HorizontalAlignment="Right" Margin="0,10,931,0" VerticalAlignment="Top" Width="173" FontSize="14" FontWeight="Bold"/>
+        <Label Content="Последствия" HorizontalAlignment="Right" Margin="0,191,931,0" VerticalAlignment="Top" Width="173" FontSize="14" FontWeight="Bold"/>
+        <Label x:Name="Effects" Content="Данные" HorizontalAlignment="Left" Margin="10,225,0,0" VerticalAlignment="Top" Width="774" Height="73"/>
+        <Label Content="Дополнительно" HorizontalAlignment="Right" Margin="0,303,931,0" VerticalAlignment="Top" Width="173" FontSize="14" FontWeight="Bold"/>
+        <Label x:Name="ExtraInfo" Content="Данные" HorizontalAlignment="Left" Margin="10,337,0,0" VerticalAlignment="Top" Width="774" Height="73"/>
+        <Button x:Name="GoBack" Content="Вернуться" HorizontalAlignment="Left" Margin="977,481,0,0" VerticalAlignment="Top" Width="106" Height="28" Click="GoBack_Click"/>
+        <TextBlock x:Name="CommonInfo" HorizontalAlignment="Left" Margin="10,44,0,0" TextWrapping="Wrap" Text="Данные" VerticalAlignment="Top" Width="1094" Height="147"/>
+
+    </Grid>
+</Window>

@@ -5,18 +5,21 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Lab2"
         mc:Ignorable="d"
-        Title="Парсер ФСТЭК" Height="549" Width="1075.5">
+        Title="Перечень угроз ФСТЭК" Height="549" Width="1075.5" ResizeMode="NoResize">
     <Grid Margin="0,0,-525,-44" Height="733" VerticalAlignment="Top" HorizontalAlignment="Left" Width="1597">
         <Button x:Name="SearchButton" Content="Выбрать файл" Margin="10,475,1384,225" Click="SearchButton_Click"/>
         <Button x:Name="DownloadButton" Content="Загрузить из Интернет" Margin="218,475,1176,225" Click="DownloadButton_Click"/>
-        <DataGrid x:Name="WholeData" Margin="10,10,534,318" MouseUp="WholeData_MouseUp"/>
+        <DataGrid x:Name="WholeData" Margin="10,10,534,318" MouseUp="WholeData_MouseUp" ColumnWidth="*"/>
         <Button x:Name="UpdateData" Content="Обновить данные" Margin="860,475,534,225"/>
         <Button x:Name="SaveData" Content="Сохранить данные" Margin="652,475,742,225" Click="SaveData_Click"/>
-        <Label Content="Объектов на странице" HorizontalAlignment="Left" Margin="721,420,0,0" VerticalAlignment="Top"/>
-        <ComboBox x:Name="PaginationChoose" HorizontalAlignment="Left" Margin="860,424,0,0" VerticalAlignment="Top" Width="51"/>
-        <Button x:Name="LeftButton" Content="&lt;" HorizontalAlignment="Left" Margin="924,424,0,0" VerticalAlignment="Top" Width="23" Height="22"/>
-        <Button x:Name="RightButton" Content="&gt;" HorizontalAlignment="Left" Margin="982,424,0,0" VerticalAlignment="Top" Width="23" Height="22"/>
-        <Label x:Name="CurrentValue" Content="0-0" HorizontalAlignment="Left" Margin="951,424,0,0" VerticalAlignment="Top" Height="28"/>
-        <Button x:Name="TypesButton" Content="Button" HorizontalAlignment="Left" Margin="10,431,0,0" VerticalAlignment="Top" Width="74" Click="ShowTypes"/>
+        <Label Content="Объектов на странице" HorizontalAlignment="Left" Margin="660,420,0,0" VerticalAlignment="Top"/>
+        <ComboBox x:Name="PaginationChoose" HorizontalAlignment="Left" Margin="797,424,0,0" VerticalAlignment="Top" Width="114" SelectionChanged="PaginationChoose_Changed" SelectedIndex="0">
+            <TextBlock>15 объектов</TextBlock>
+            <TextBlock>20 объектов</TextBlock>
+
+        </ComboBox>
+        <Button x:Name="LeftButton" Content="&lt;" HorizontalAlignment="Left" Margin="924,424,0,0" VerticalAlignment="Top" Width="23" Height="22" Click="LeftButton_Click"/>
+        <Button x:Name="RightButton" Content="&gt;" HorizontalAlignment="Left" Margin="1020,424,0,0" VerticalAlignment="Top" Width="23" Height="22" Click="RightButton_Click"/>
+        <Label x:Name="Diapazon" Content="1-15" HorizontalAlignment="Left" Margin="954,422,0,0" VerticalAlignment="Top" Width="66" Height="34"/>
     </Grid>
 </Window>

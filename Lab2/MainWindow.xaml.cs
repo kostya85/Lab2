@@ -26,7 +26,9 @@ namespace Lab2
     /// </summary>
     public partial class MainWindow : Window
     {
+        public static int CurrentStartNumber { get; set; } = 0;
         public static List<Bug> l = new List<Bug>();
+        public static int PaginationCountValue { get; set; } = 15;
         public void StartWindow()
         {
             if (!System.IO.File.Exists(AppDomain.CurrentDomain.BaseDirectory + "data.xlsx"))
@@ -44,8 +46,11 @@ namespace Lab2
                 SearchButton.Visibility = Visibility.Collapsed;
                 DownloadButton.Visibility = Visibility.Collapsed;
                 UpdateData.Visibility = Visibility.Visible;
-                if(CorrectFile(AppDomain.CurrentDomain.BaseDirectory + "data.xlsx"))
-                ParsingFile(AppDomain.CurrentDomain.BaseDirectory + "data.xlsx");
+                if (CorrectFile(AppDomain.CurrentDomain.BaseDirectory + "data.xlsx"))
+                {
+                    ParsingFile(AppDomain.CurrentDomain.BaseDirectory + "data.xlsx");
+                    Pagination(PaginationCountValue);
+                }
                 else
                 {
                     MessageBox.Show("Выбранный Вами документ не является корректным!", "Ошибка распознавания");
@@ -67,6 +72,8 @@ namespace Lab2
                 Header = "Наименование угрозы",
                 Binding = new Binding("Description")
             });
+            WholeData.Columns[0].Width = 135;
+            WholeData.IsReadOnly = true;
             StartWindow();
             
         }
@@ -223,75 +230,90 @@ namespace Lab2
 
         private void WholeData_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            Bug path = WholeData.SelectedItem as Bug;
-            MessageBox.Show($"Идентификатор угрозы: {path.Id}\nНаименование угрозы: {path.Description}" +
-                $"\nОписание угрозы: {path.FullDescription}\nОбъект воздействия: {path.ObjectDanger}\n" +
-                $"Нарушение конфиденциальности: {path.ConfDanger}","Информация об угрозе "+path.Id);
+            try
+            {
+                Bug path = WholeData.SelectedItem as Bug;
+
+                string commonInfo = $"Идентификатор угрозы: {path.Id}\n\nНаименование угрозы: {path.Description}" +
+                    $"\n\nОписание угрозы: {path.FullDescription}\nОбъект воздействия: {path.ObjectDanger}\n";
+                string effects = $"Нарушение конфиденциальности: {path.ConfDanger}\n" +
+                    $"Нарушение целостности: {path.FullDanger}\n" +
+                    $"Нарушение досупности: {path.AccessDanger}";
+                string extraInfo = $"Дата включения угрозы: {path.DateStart.ToString("dd.MM.yyyy")}\n\n" +
+                    $"Дата последнего изменения данных: {path.DateUpdate.ToString("dd.MM.yyyy")}";
+                BugInfo b = new BugInfo(commonInfo, effects, extraInfo);
+
+                b.Show();
+            }
+            catch(Exception f)
+            {
+                MessageBox.Show($"Ошибка при открытии подробной информации об угрозе: \n{f.Message}\nПопробуйте еще раз...","Ошибка открытия");
+            }
         }
 
-        private void ShowTypes(object sender, RoutedEventArgs e)
-        {
-            string fileName = AppDomain.CurrentDomain.BaseDirectory + "data.xlsx";
-            Excel.Application xlApp = new Excel.Application();
-            Excel.Workbook xlWorkBook = xlApp.Workbooks.Open(fileName, 0, true, 5, "", "", true, Microsoft.Office.Interop.Excel.XlPlatform.xlWindows, "\t", false, false, 0, true, 1, 0);
+        //private void ShowTypes(object sender, RoutedEventArgs e)
+        //{
+        //    string fileName = AppDomain.CurrentDomain.BaseDirectory + "data.xlsx";
+        //    Excel.Application xlApp = new Excel.Application();
+        //    Excel.Workbook xlWorkBook = xlApp.Workbooks.Open(fileName, 0, true, 5, "", "", true, Microsoft.Office.Interop.Excel.XlPlatform.xlWindows, "\t", false, false, 0, true, 1, 0);
             
 
-                Excel.Worksheet xlWorkSheet;
-                Excel.Range range;
-                List<string> Types = new List<string>();
-                Type str;
-                int rCnt;
-                int cCnt;
-                int rw = 0;
-                int cl = 0;
+        //        Excel.Worksheet xlWorkSheet;
+        //        Excel.Range range;
+        //        List<string> Types = new List<string>();
+        //        Type str;
+        //        int rCnt;
+        //        int cCnt;
+        //        int rw = 0;
+        //        int cl = 0;
 
 
-                xlWorkSheet = (Excel.Worksheet)xlWorkBook.Worksheets.get_Item(1);
+        //        xlWorkSheet = (Excel.Worksheet)xlWorkBook.Worksheets.get_Item(1);
 
-                range = xlWorkSheet.UsedRange;
-                rw = range.Rows.Count;
-                cl = range.Columns.Count;
-
-
-
-
-                for (cCnt = 1; cCnt <= cl; cCnt++)
-                {
-                if ((range.Cells[3, cCnt] as Excel.Range).Value is double) {
-
-                    Types.Add($"column {cCnt} is double\n");
-                }
-                else if((range.Cells[3, cCnt] as Excel.Range).Value is string)
-                {
-                    Types.Add($"column {cCnt} is string\n");
-                }
-                else if ((range.Cells[3, cCnt] as Excel.Range).Value is bool)
-                {
-                    Types.Add($"column {cCnt} is bool\n");
-                }
-                else if ((range.Cells[3, cCnt] as Excel.Range).Value is DateTime)
-                {
-                    Types.Add($"column {cCnt} is DateTime\n");
-                }
-                else
-                {
-                    Types.Add($"column {cCnt} is Type\n");
-                }
-
-            }
+        //        range = xlWorkSheet.UsedRange;
+        //        rw = range.Rows.Count;
+        //        cl = range.Columns.Count;
 
 
 
 
-            xlWorkBook.Close(true, fileName, null);
-            xlApp.Quit();
+        //        for (cCnt = 1; cCnt <= cl; cCnt++)
+        //        {
+        //        if ((range.Cells[3, cCnt] as Excel.Range).Value is double) {
 
-            string res = "";
-            foreach (var s in Types) res += s;
-            MessageBox.Show(res);
+        //            Types.Add($"column {cCnt} is double\n");
+        //        }
+        //        else if((range.Cells[3, cCnt] as Excel.Range).Value is string)
+        //        {
+        //            Types.Add($"column {cCnt} is string\n");
+        //        }
+        //        else if ((range.Cells[3, cCnt] as Excel.Range).Value is bool)
+        //        {
+        //            Types.Add($"column {cCnt} is bool\n");
+        //        }
+        //        else if ((range.Cells[3, cCnt] as Excel.Range).Value is DateTime)
+        //        {
+        //            Types.Add($"column {cCnt} is DateTime\n");
+        //        }
+        //        else
+        //        {
+        //            Types.Add($"column {cCnt} is Type\n");
+        //        }
+
+        //    }
+
+
+
+
+        //    xlWorkBook.Close(true, fileName, null);
+        //    xlApp.Quit();
+
+        //    string res = "";
+        //    foreach (var s in Types) res += s;
+        //    MessageBox.Show(res);
                 
             
-        }
+        //}
 
         private void SaveData_Click(object sender, RoutedEventArgs e)
         {
@@ -300,10 +322,104 @@ namespace Lab2
             saveFileDialog.Title = "Выберите путь для сохранения базы";
             if (saveFileDialog.ShowDialog() == true)
             {
-                File.Copy(AppDomain.CurrentDomain.BaseDirectory + "data.xlsx", saveFileDialog.FileName);
+                if (File.Exists(saveFileDialog.FileName))
+                {
+                    try
+                    {
+                        File.Delete(saveFileDialog.FileName);
+                        File.Copy(AppDomain.CurrentDomain.BaseDirectory + "data.xlsx", saveFileDialog.FileName);
+                    }
+                    catch(Exception k)
+                    {
+                        MessageBox.Show($"Возникла ошибка при сохранении файла: \n{k.Message}");
+                    }
+                }
+                else File.Copy(AppDomain.CurrentDomain.BaseDirectory + "data.xlsx", saveFileDialog.FileName);
             }
 
                
+        }
+        private void Pagination(int count)
+        {
+            List<Bug> show = new List<Bug>();
+            if (CurrentStartNumber == 0 && LeftButton != null && RightButton != null) { LeftButton.IsEnabled = false; RightButton.IsEnabled = true; }
+            else if ((CurrentStartNumber + count >= l.Count) && RightButton != null && LeftButton != null) { RightButton.IsEnabled = false; LeftButton.IsEnabled = true; }
+            else if (RightButton != null && LeftButton != null) { RightButton.IsEnabled = true; LeftButton.IsEnabled = true; }
+            if (l.Count - (CurrentStartNumber + count) >= 1)
+            {
+                for(int i = CurrentStartNumber; i < CurrentStartNumber+count; i++)
+                {
+                    show.Add(l[i]);
+                }
+                if (Diapazon != null)
+                {
+                    Diapazon.Content = $"{CurrentStartNumber + 1}-{CurrentStartNumber + count}";
+                }
+            }
+            else
+            {
+                for(int i = CurrentStartNumber; i < l.Count; i++)
+                {
+                    show.Add(l[i]);
+                }
+                if (Diapazon != null)
+                {
+                    Diapazon.Content = $"{CurrentStartNumber + 1}-{l.Count}";
+                }
+            }
+            WholeData.ItemsSource = show;
+            
+        }
+        
+
+      
+
+        private void PaginationChoose_Changed(object sender, SelectionChangedEventArgs e)
+        {
+            if (PaginationChoose.SelectedIndex == 0)
+            {
+                
+                Pagination(15);
+                
+            }
+            else
+            {
+              
+                Pagination(20);
+            }
+        }
+
+        private void LeftButton_Click(object sender, RoutedEventArgs e)
+        {
+            int count;
+            if (PaginationChoose != null)
+            {
+                if (PaginationChoose.SelectedIndex == 0) count = 15;
+                else count = 20;
+                if (CurrentStartNumber - count > 0)
+                {
+                    CurrentStartNumber -= count;
+                }
+                else CurrentStartNumber = 0;
+                Pagination(count);
+            }
+            
+        }
+
+        private void RightButton_Click(object sender, RoutedEventArgs e)
+        {
+            int count;
+            if (PaginationChoose != null)
+            {
+                if (PaginationChoose.SelectedIndex == 0) count = 15;
+                else count = 20;
+                if (CurrentStartNumber + count >= l.Count)
+                {
+                    CurrentStartNumber -= count;
+                }
+                else CurrentStartNumber += count;
+                Pagination(count);
+            }
         }
     }
 }
