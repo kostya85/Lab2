@@ -292,5 +292,18 @@ namespace Lab2
                 
             
         }
+
+        private void SaveData_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "Excel File|*.xlsx";
+            saveFileDialog.Title = "Выберите путь для сохранения базы";
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                File.Copy(AppDomain.CurrentDomain.BaseDirectory + "data.xlsx", saveFileDialog.FileName);
+            }
+
+               
+        }
     }
 }

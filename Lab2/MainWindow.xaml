@@ -11,7 +11,7 @@
         <Button x:Name="DownloadButton" Content="Загрузить из Интернет" Margin="218,475,1176,225" Click="DownloadButton_Click"/>
         <DataGrid x:Name="WholeData" Margin="10,10,534,318" MouseUp="WholeData_MouseUp"/>
         <Button x:Name="UpdateData" Content="Обновить данные" Margin="860,475,534,225"/>
-        <Button x:Name="SaveData" Content="Сохранить данные" Margin="652,475,742,225"/>
+        <Button x:Name="SaveData" Content="Сохранить данные" Margin="652,475,742,225" Click="SaveData_Click"/>
         <Label Content="Объектов на странице" HorizontalAlignment="Left" Margin="721,420,0,0" VerticalAlignment="Top"/>
         <ComboBox x:Name="PaginationChoose" HorizontalAlignment="Left" Margin="860,424,0,0" VerticalAlignment="Top" Width="51"/>
         <Button x:Name="LeftButton" Content="&lt;" HorizontalAlignment="Left" Margin="924,424,0,0" VerticalAlignment="Top" Width="23" Height="22"/>
