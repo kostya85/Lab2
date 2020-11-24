@@ -37,17 +37,21 @@ namespace Lab2
                 SearchButton.Visibility = Visibility.Visible;
                 DownloadButton.Visibility = Visibility.Visible;
                 UpdateData.Visibility = Visibility.Collapsed;
-                
-                MessageBox.Show("При загрузке программы необходимый файл с базой данных не был найден!\nПожалуйста, загрузите файл из сети Интернет,\nлибо выберите уже существующий на Вашем компьютере!", "Ошибка - Нет файла");
+                ErrorText.Visibility = Visibility.Visible;
+                SaveData.Visibility = Visibility.Collapsed;
+                //MessageBox.Show("При загрузке программы необходимый файл с базой данных не был найден!\nПожалуйста, загрузите файл из сети Интернет,\nлибо выберите уже существующий на Вашем компьютере!", "Ошибка - Нет файла");
             }
             else
             {
                 
-                SearchButton.Visibility = Visibility.Collapsed;
-                DownloadButton.Visibility = Visibility.Collapsed;
-                UpdateData.Visibility = Visibility.Visible;
+                
                 if (CorrectFile(AppDomain.CurrentDomain.BaseDirectory + "data.xlsx"))
                 {
+                    ErrorText.Visibility = Visibility.Collapsed;
+                    SearchButton.Visibility = Visibility.Collapsed;
+                    DownloadButton.Visibility = Visibility.Collapsed;
+                    UpdateData.Visibility = Visibility.Visible;
+                    SaveData.Visibility = Visibility.Visible;
                     ParsingFile(AppDomain.CurrentDomain.BaseDirectory + "data.xlsx");
                     Pagination(PaginationCountValue);
                 }
@@ -122,9 +126,9 @@ namespace Lab2
                 Excel.Worksheet xlWorkSheet;
                 Excel.Range range;
                 List<Bug> l = new List<Bug>();
-                string str;
-                int rCnt;
-                int cCnt;
+                
+                
+                
                 int rw = 0;
                 int cl = 0;
 
@@ -168,9 +172,9 @@ namespace Lab2
                 Excel.Worksheet xlWorkSheet;
                 Excel.Range range;
                 
-                string str;
+                
                 int rCnt;
-                int cCnt;
+                
                 int rw = 0;
                 int cl = 0;
 
@@ -185,11 +189,7 @@ namespace Lab2
                 for (rCnt = 3; rCnt <= rw; rCnt++)
                 {
 
-                    //for (cCnt = 1; cCnt <= 3; cCnt++)
-                    //{
-                    //    str = ((range.Cells[rCnt, cCnt] as Excel.Range).Value2).ToString();
-                    //    l1.Add(str);
-                    //}
+                    
                     string id = ((range.Cells[rCnt, 1] as Excel.Range).Value).ToString();
                     string des = ((range.Cells[rCnt, 2] as Excel.Range).Value).ToString();
                     string fulldes = ((range.Cells[rCnt, 3] as Excel.Range).Value).ToString();
@@ -233,17 +233,19 @@ namespace Lab2
             try
             {
                 Bug path = WholeData.SelectedItem as Bug;
+                if (path != null)
+                {
+                    string commonInfo = $"Идентификатор угрозы: {path.Id}\n\nНаименование угрозы: {path.Description}" +
+                        $"\n\nОписание угрозы: {path.FullDescription}\nОбъект воздействия: {path.ObjectDanger}\n";
+                    string effects = $"Нарушение конфиденциальности: {path.ConfDanger}\n" +
+                        $"Нарушение целостности: {path.FullDanger}\n" +
+                        $"Нарушение досупности: {path.AccessDanger}";
+                    string extraInfo = $"Дата включения угрозы: {path.DateStart.ToString("dd.MM.yyyy")}\n\n" +
+                        $"Дата последнего изменения данных: {path.DateUpdate.ToString("dd.MM.yyyy")}";
+                    BugInfo b = new BugInfo(commonInfo, effects, extraInfo);
 
-                string commonInfo = $"Идентификатор угрозы: {path.Id}\n\nНаименование угрозы: {path.Description}" +
-                    $"\n\nОписание угрозы: {path.FullDescription}\nОбъект воздействия: {path.ObjectDanger}\n";
-                string effects = $"Нарушение конфиденциальности: {path.ConfDanger}\n" +
-                    $"Нарушение целостности: {path.FullDanger}\n" +
-                    $"Нарушение досупности: {path.AccessDanger}";
-                string extraInfo = $"Дата включения угрозы: {path.DateStart.ToString("dd.MM.yyyy")}\n\n" +
-                    $"Дата последнего изменения данных: {path.DateUpdate.ToString("dd.MM.yyyy")}";
-                BugInfo b = new BugInfo(commonInfo, effects, extraInfo);
-
-                b.Show();
+                    b.Show();
+                }
             }
             catch(Exception f)
             {
