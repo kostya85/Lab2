@@ -8,16 +8,18 @@ namespace Lab2
 {
     public class Bug
     {
-        public string Id { get; private set; }
-        public string Description { get; private set; }
-        public string FullDescription { get; private set; }
-        public string Source { get; private set; }
-        public string ObjectDanger { get; private set; }
-        public string ConfDanger { get; private set; }
-        public string AccessDanger { get; private set; }
-        public string FullDanger { get; private set; }
-        public DateTime DateStart { get; private set; }
-        public DateTime DateUpdate { get; private set; }
+        public string Id { get; set; }
+        public string Description { get; set; }
+        public string FullDescription { get; set; }
+        public string Source { get; set; }
+        public string ObjectDanger { get; set; }
+        public string ConfDanger { get; set; }
+        public string AccessDanger { get; set; }
+        public string FullDanger { get; set; }
+        public DateTime DateStart { get; set; }
+        public DateTime DateUpdate { get; set; }
+        public string DateStartToString { get; set; }
+        public string DateUpdateToString { get; set; }
         public Bug(string id, string description)
         {
             if (id.Length >= 3)
@@ -64,6 +66,8 @@ namespace Lab2
             
             DateStart = dateStart;
             DateUpdate = dateUpdate;
+            DateStartToString = DateStart.ToString("dd.MM.yyyy");
+            DateUpdateToString = DateUpdate.ToString("dd.MM.yyyy");
         }
     }
 }

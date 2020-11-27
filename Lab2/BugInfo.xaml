@@ -16,7 +16,8 @@
         <Label Content="Дополнительно" HorizontalAlignment="Right" Margin="0,303,931,0" VerticalAlignment="Top" Width="173" FontSize="14" FontWeight="Bold"/>
         <Label x:Name="ExtraInfo" Content="Данные" HorizontalAlignment="Left" Margin="10,337,0,0" VerticalAlignment="Top" Width="774" Height="73"/>
         <Button x:Name="GoBack" Content="Вернуться" HorizontalAlignment="Left" Margin="977,481,0,0" VerticalAlignment="Top" Width="106" Height="28" Click="GoBack_Click"/>
-        <TextBlock x:Name="CommonInfo" HorizontalAlignment="Left" Margin="10,44,0,0" TextWrapping="Wrap" Text="Данные" VerticalAlignment="Top" Width="1094" Height="147"/>
+        <TextBox x:Name="CommonInfo" HorizontalAlignment="Left" Height="147" Margin="10,44,0,0" TextWrapping="Wrap" Text="Данные" VerticalAlignment="Top" Width="1073"  IsReadOnly="True"/>
+
 
     </Grid>
 </Window>

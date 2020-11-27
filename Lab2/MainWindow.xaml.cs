@@ -164,6 +164,7 @@ namespace Lab2
         }
         private void ParsingFile(string fileName)
         {
+            if (l.Count > 0) l = new List<Bug>();
             Excel.Application xlApp = new Excel.Application();
             Excel.Workbook xlWorkBook = xlApp.Workbooks.Open(fileName, 0, true, 5, "", "", true, Microsoft.Office.Interop.Excel.XlPlatform.xlWindows, "\t", false, false, 0, true, 1, 0);
             try
@@ -200,13 +201,13 @@ namespace Lab2
                     string accessdanger = ((range.Cells[rCnt, 8] as Excel.Range).Value).ToString();
                     DateTime datestart = ((range.Cells[rCnt, 9] as Excel.Range).Value);
                     DateTime dateupdate = ((range.Cells[rCnt, 10] as Excel.Range).Value);
-                    
+
                     
                     l.Add(new Bug(id, des, fulldes, source, objdanger, confdanger, fulldanger, accessdanger, datestart,dateupdate));
                 }
 
                
-                WholeData.ItemsSource = l;
+               // WholeData.ItemsSource = l;
             }
             catch(Exception e)
             {
@@ -344,7 +345,8 @@ namespace Lab2
         private void Pagination(int count)
         {
             List<Bug> show = new List<Bug>();
-            if (CurrentStartNumber == 0 && LeftButton != null && RightButton != null) { LeftButton.IsEnabled = false; RightButton.IsEnabled = true; }
+            if (CurrentStartNumber == 0 && LeftButton != null && RightButton != null && CurrentStartNumber + count >= l.Count) { LeftButton.IsEnabled = false; RightButton.IsEnabled = false; }
+            else if (CurrentStartNumber == 0 && LeftButton != null && RightButton != null) { LeftButton.IsEnabled = false; RightButton.IsEnabled = true; }
             else if ((CurrentStartNumber + count >= l.Count) && RightButton != null && LeftButton != null) { RightButton.IsEnabled = false; LeftButton.IsEnabled = true; }
             else if (RightButton != null && LeftButton != null) { RightButton.IsEnabled = true; LeftButton.IsEnabled = true; }
             if (l.Count - (CurrentStartNumber + count) >= 1)
@@ -380,13 +382,13 @@ namespace Lab2
         {
             if (PaginationChoose.SelectedIndex == 0)
             {
-                
+                PaginationCountValue = 15;
                 Pagination(15);
                 
             }
             else
             {
-              
+                PaginationCountValue = 20;
                 Pagination(20);
             }
         }
@@ -421,6 +423,70 @@ namespace Lab2
                 }
                 else CurrentStartNumber += count;
                 Pagination(count);
+            }
+        }
+
+        private void UpdateData_Click(object sender, RoutedEventArgs e)
+        {
+            List<Bug> result = new List<Bug>();
+            List<Bug> before = l;
+            string url = "https://bdu.fstec.ru/files/documents/thrlist.xlsx";
+            WebClient wc = new WebClient();
+            if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "data.xlsx")) File.Delete(AppDomain.CurrentDomain.BaseDirectory + "data.xlsx");
+            wc.DownloadFile(url, AppDomain.CurrentDomain.BaseDirectory + "data.xlsx");
+            if (CorrectFile(AppDomain.CurrentDomain.BaseDirectory + "data.xlsx"))
+            {
+                ParsingFile(AppDomain.CurrentDomain.BaseDirectory + "data.xlsx");
+                List<Bug> after = l;
+
+                for (int i = 0; i < before.Count; i++)
+                {
+                    bool isExist = false;
+                    bool hasChanges = false;
+                    for (int j = 0; j < after.Count; j++)
+                    {
+                        if (after[j].Id == before[i].Id)
+                        {
+                            isExist = true;
+                            if (before[i].Description != after[j].Description) { before[i].Description = "[БЫЛО]\n" + before[i].Description + "\n[СТАЛО]\n" + after[j].Description; hasChanges = true; }
+                            if (before[i].FullDescription != after[j].FullDescription) { before[i].FullDescription = "[БЫЛО]\n" + before[i].FullDescription + "\n[СТАЛО]\n" + after[j].FullDescription; hasChanges = true; }
+                            if (before[i].Source != after[j].Source) { before[i].Source = "[БЫЛО]\n" + before[i].Source + "\n[СТАЛО]\n" + after[j].Source; hasChanges = true; }
+                            if (before[i].ObjectDanger != after[j].ObjectDanger) { before[i].ObjectDanger = "[БЫЛО]\n" + before[i].ObjectDanger + "\n[СТАЛО]\n" + after[j].ObjectDanger; hasChanges = true; }
+                            if (before[i].AccessDanger != after[j].AccessDanger) { before[i].AccessDanger = "[БЫЛО]\n" + before[i].AccessDanger + "\n[СТАЛО]\n" + after[j].AccessDanger; hasChanges = true; }
+                            if (before[i].FullDanger != after[j].FullDanger) { before[i].FullDanger = "[БЫЛО]\n" + before[i].FullDanger + "\n[СТАЛО]\n" + after[j].FullDanger; hasChanges = true; }
+                            if (before[i].ConfDanger != after[j].ConfDanger) { before[i].ConfDanger = "[БЫЛО]\n" + before[i].ConfDanger + "\n[СТАЛО]\n" + after[j].ConfDanger; hasChanges = true; }
+                            //if (before[i].DateStart != after[j].DateStart) before[i].ConfDanger += "[БЫЛО]\n" + before[i].ConfDanger + "\n[СТАЛО]\n" + after[j].ConfDanger;
+                            before[i].DateUpdate = after[j].DateUpdate;
+                            if (hasChanges) result.Add(before[i]);
+                        }
+                    }
+                    if (!isExist)
+                    {
+                        before[i].Id = "[УДАЛЕНА ЗАПИСЬ]\n" + before[i].Id;
+                        result.Add(before[i]);
+                    }
+                }
+                for (int i = 0; i < after.Count; i++)
+                {
+                    bool isExist = false;
+                    for (int j = 0; j < before.Count; j++)
+                    {
+                        if (after[i].Id == before[j].Id)
+                        {
+                            isExist = true;
+                        }
+                    }
+                    if (!isExist)
+                    {
+                        after[i].Id = "[ДОБАВЛЕНА ЗАПИСЬ]\n" + after[i].Id;
+                        result.Add(after[i]);
+                    }
+                }
+
+
+                UpdateWindow update = new UpdateWindow(result);
+                update.Show();
+                StartWindow();
             }
         }
     }

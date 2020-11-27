@@ -10,7 +10,7 @@
         <Button x:Name="SearchButton" Content="Выбрать файл" Margin="10,475,1384,225" Click="SearchButton_Click"/>
         <Button x:Name="DownloadButton" Content="Загрузить из Интернет" Margin="218,475,1176,225" Click="DownloadButton_Click"/>
         <DataGrid x:Name="WholeData" Margin="10,10,534,318" MouseUp="WholeData_MouseUp" ColumnWidth="*"/>
-        <Button x:Name="UpdateData" Content="Обновить данные" Margin="860,475,534,225"/>
+        <Button x:Name="UpdateData" Content="Обновить данные" Margin="860,475,534,225" Click="UpdateData_Click"/>
         <Button x:Name="SaveData" Content="Сохранить данные" Margin="652,475,742,225" Click="SaveData_Click"/>
         <Label Content="Объектов на странице" HorizontalAlignment="Left" Margin="660,420,0,0" VerticalAlignment="Top"/>
         <ComboBox x:Name="PaginationChoose" HorizontalAlignment="Left" Margin="797,424,0,0" VerticalAlignment="Top" Width="114" SelectionChanged="PaginationChoose_Changed" SelectedIndex="0">
@@ -18,9 +18,9 @@
             <TextBlock>20 объектов</TextBlock>
 
         </ComboBox>
-        <Button x:Name="LeftButton" Content="&lt;" HorizontalAlignment="Left" Margin="924,424,0,0" VerticalAlignment="Top" Width="23" Height="22" Click="LeftButton_Click"/>
+        <Button x:Name="LeftButton" Content="&lt;" HorizontalAlignment="Left" Margin="931,424,0,0" VerticalAlignment="Top" Width="23" Height="22" Click="LeftButton_Click"/>
         <Button x:Name="RightButton" Content="&gt;" HorizontalAlignment="Left" Margin="1020,424,0,0" VerticalAlignment="Top" Width="23" Height="22" Click="RightButton_Click"/>
-        <Label x:Name="Diapazon" Content="1-15" HorizontalAlignment="Left" Margin="954,422,0,0" VerticalAlignment="Top" Width="66" Height="34"/>
+        <Label x:Name="Diapazon" Content="1-15" HorizontalAlignment="Left" Margin="954,422,0,0" VerticalAlignment="Top" Width="66" Height="34" HorizontalContentAlignment="Center"/>
         <TextBlock x:Name="ErrorText" HorizontalAlignment="Left" Margin="10,427,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="36" Width="530" Foreground="#FFF00D0D" FontWeight="Bold"><Run Text="При запуске программы файл data.xlsx не был найден!"/><LineBreak/><Run Text="Пожалуйста выберите файл на Вашем компьютере либо загрузите его из сети Интернет."/></TextBlock>
     </Grid>
 </Window>
