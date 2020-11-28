@@ -7,11 +7,11 @@
         mc:Ignorable="d"
         Title="Сведения об обновлении" Height="720" Width="1280" ResizeMode="NoResize">
     <Grid>
-        <Button x:Name="GoBack" Content="Вернуться" HorizontalAlignment="Left" Margin="1103,624,0,0" VerticalAlignment="Top" Width="133" Height="38" Click="GoBack_Click"/>
+        <Button x:Name="GoBack" Content="Вернуться" HorizontalAlignment="Left" Margin="1103,624,0,0" VerticalAlignment="Top" Width="133" Height="38" Click="GoBack_Click" Background="Blue" BorderBrush="Blue" Foreground="White"/>
         <DataGrid x:Name="UpdateData" HorizontalAlignment="Left" Height="588" Margin="10,10,0,0" VerticalAlignment="Top" Width="1252"/>
         <TextBlock x:Name="Info" HorizontalAlignment="Left" Margin="10,603,0,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="18" Width="370"><Run Text="Обновление прошло успешно!"/><LineBreak/><Run Text="Все обновлено"/><Run Text="/"/><Run Text="добавлено записей:"/></TextBlock>
-        <Button x:Name="LeftButton" Content="&lt;" HorizontalAlignment="Left" Margin="564,624,0,0" VerticalAlignment="Top" Width="30" RenderTransformOrigin="0.48,0.55" Height="38"/>
-        <Button x:Name="RightButton" Content="&gt;" HorizontalAlignment="Left" Margin="698,624,0,0" VerticalAlignment="Top" Width="30" RenderTransformOrigin="0.48,0.55" Height="38"/>
+        <Button x:Name="LeftButton" Content="&lt;" HorizontalAlignment="Left" Margin="564,624,0,0" VerticalAlignment="Top" Width="30" RenderTransformOrigin="0.48,0.55" Height="38" Click="LeftButton_Click" Background="Blue" Foreground="White"/>
+        <Button x:Name="RightButton" Content="&gt;" HorizontalAlignment="Left" Margin="698,624,0,0" VerticalAlignment="Top" Width="30" RenderTransformOrigin="0.48,0.55" Height="38" Click="RightButton_Click" Background="Blue" Foreground="White"/>
         <Label x:Name="Diapazon" Content="1-15" HorizontalAlignment="Left" Margin="599,624,0,0" VerticalAlignment="Top" FontSize="22" Width="94" HorizontalContentAlignment="Center"/>
 
     </Grid>

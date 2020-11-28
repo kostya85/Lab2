@@ -6,17 +6,19 @@
         xmlns:local="clr-namespace:Lab2"
         mc:Ignorable="d"
         Title="Информация об угрозе" Height="564.345" Width="1119.672" ResizeMode="NoResize">
+    
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <Label Content="Общая информация" HorizontalAlignment="Right" Margin="0,10,931,0" VerticalAlignment="Top" Width="173" FontSize="14" FontWeight="Bold"/>
         <Label Content="Последствия" HorizontalAlignment="Right" Margin="0,191,931,0" VerticalAlignment="Top" Width="173" FontSize="14" FontWeight="Bold"/>
-        <Label x:Name="Effects" Content="Данные" HorizontalAlignment="Left" Margin="10,225,0,0" VerticalAlignment="Top" Width="774" Height="73"/>
+        <Label x:Name="Effects" Content="Данные" HorizontalAlignment="Left" Margin="10,225,0,0" VerticalAlignment="Top" Width="1073" Height="73" Background="#FFD5F3EB"/>
         <Label Content="Дополнительно" HorizontalAlignment="Right" Margin="0,303,931,0" VerticalAlignment="Top" Width="173" FontSize="14" FontWeight="Bold"/>
-        <Label x:Name="ExtraInfo" Content="Данные" HorizontalAlignment="Left" Margin="10,337,0,0" VerticalAlignment="Top" Width="774" Height="73"/>
-        <Button x:Name="GoBack" Content="Вернуться" HorizontalAlignment="Left" Margin="977,481,0,0" VerticalAlignment="Top" Width="106" Height="28" Click="GoBack_Click"/>
-        <TextBox x:Name="CommonInfo" HorizontalAlignment="Left" Height="147" Margin="10,44,0,0" TextWrapping="Wrap" Text="Данные" VerticalAlignment="Top" Width="1073"  IsReadOnly="True"/>
+        <Label x:Name="ExtraInfo" Content="Данные" HorizontalAlignment="Left" Margin="10,337,0,0" VerticalAlignment="Top" Width="1073" Height="73" Background="#FFD5F3EB"/>
+        <Button x:Name="GoBack" Content="Вернуться" HorizontalAlignment="Left" Margin="977,481,0,0" VerticalAlignment="Top" Width="106" Height="28" Click="GoBack_Click" Background="#FF0D0DCB" BorderBrush="#FF0D0DCB" Foreground="White"/>
+        <TextBox x:Name="CommonInfo" HorizontalAlignment="Left" Height="147" Margin="10,44,0,0" TextWrapping="Wrap" Text="Данные" VerticalAlignment="Top" Width="1073"  IsReadOnly="True" Background="#FFD5F3EB" BorderBrush="#FFD5F3EB"/>
+        <Label Content="*Возможна прокрутка текста" HorizontalAlignment="Left" Margin="913,196,0,0" VerticalAlignment="Top" Width="170"/>
 
 
     </Grid>

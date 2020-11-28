@@ -30,7 +30,7 @@ namespace Lab2
         {
             l = list;
             InitializeComponent();
-            Info.Text += l.Count;
+            Info.Text =$"Обновление прошло успешно!\nВсего обновлено/ добавлено записей:{l.Count}";
             UpdateData.AutoGenerateColumns = false;
             UpdateData.Columns.Add(new DataGridTextColumn
             {
