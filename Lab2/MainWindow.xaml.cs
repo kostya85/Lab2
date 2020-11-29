@@ -18,6 +18,7 @@ using System.Reflection;
 using Excel = Microsoft.Office.Interop.Excel;
 using System.Data;
 using System.Net;
+using System.Net.NetworkInformation;
 
 namespace Lab2
 {
@@ -39,6 +40,8 @@ namespace Lab2
                 UpdateData.Visibility = Visibility.Collapsed;
                 ErrorText.Visibility = Visibility.Visible;
                 SaveData.Visibility = Visibility.Collapsed;
+                LeftButton.IsEnabled = false;
+                RightButton.IsEnabled = false;
                 //MessageBox.Show("При загрузке программы необходимый файл с базой данных не был найден!\nПожалуйста, загрузите файл из сети Интернет,\nлибо выберите уже существующий на Вашем компьютере!", "Ошибка - Нет файла");
             }
             else
@@ -52,6 +55,7 @@ namespace Lab2
                     DownloadButton.Visibility = Visibility.Collapsed;
                     UpdateData.Visibility = Visibility.Visible;
                     SaveData.Visibility = Visibility.Visible;
+                    AutoUpdate();
                     ParsingFile(AppDomain.CurrentDomain.BaseDirectory + "data.xlsx");
                     Pagination(PaginationCountValue);
                 }
@@ -106,10 +110,7 @@ namespace Lab2
                         StartWindow();
                         
                     }
-                    else
-                    {
-                        MessageBox.Show("Выбранный Вами документ не является корректным!", "Ошибка распознавания");
-                    }
+                    
                 }
                 
                 
@@ -142,7 +143,8 @@ namespace Lab2
                 xlApp.Quit();
                 if (cl != 10)
                 {
-                    return false;
+                    throw new Exception();
+                    
                 }
                 else
                 {
@@ -222,11 +224,25 @@ namespace Lab2
 
         private void DownloadButton_Click(object sender, RoutedEventArgs e)
         {
-            string url = "https://bdu.fstec.ru/files/documents/thrlist.xlsx";
-            WebClient wc = new WebClient();
-            wc.DownloadFile(url, AppDomain.CurrentDomain.BaseDirectory + "data.xlsx");
-            if (CorrectFile(AppDomain.CurrentDomain.BaseDirectory + "data.xlsx")) ParsingFile(AppDomain.CurrentDomain.BaseDirectory + "data.xlsx");
-            StartWindow();
+            try
+            {
+                if (!CheckForInternetConnection()) { throw new Exception(); }
+                else
+                {
+                    string url = "https://bdu.fstec.ru/files/documents/thrlist.xlsx";
+                    WebClient wc = new WebClient();
+                    wc.DownloadFile(url, AppDomain.CurrentDomain.BaseDirectory + "data.xlsx");
+                    if (CorrectFile(AppDomain.CurrentDomain.BaseDirectory + "data.xlsx"))
+                    {
+                        ParsingFile(AppDomain.CurrentDomain.BaseDirectory + "data.xlsx");
+                        StartWindow();
+                    }
+                }
+            }
+            catch (Exception exep)
+            {
+                MessageBox.Show("Ошибка загрузки файла, возможно Вы не подключены к Интернет!", "Ошибка загрузки");
+            }
         }
 
         private void WholeData_MouseUp(object sender, MouseButtonEventArgs e)
@@ -237,12 +253,12 @@ namespace Lab2
                 if (path != null)
                 {
                     string commonInfo = $"Идентификатор угрозы: {path.Id}\n\nНаименование угрозы: {path.Description}" +
-                        $"\n\nОписание угрозы: {path.FullDescription}\nОбъект воздействия: {path.ObjectDanger}\n";
+                        $"\n\nОписание угрозы: {path.FullDescription}\n\nОбъект воздействия: {path.ObjectDanger}\n";
                     string effects = $"Нарушение конфиденциальности: {path.ConfDanger}\n" +
                         $"Нарушение целостности: {path.FullDanger}\n" +
                         $"Нарушение досупности: {path.AccessDanger}";
-                    string extraInfo = $"Дата включения угрозы: {path.DateStart.ToString("dd.MM.yyyy")}\n\n" +
-                        $"Дата последнего изменения данных: {path.DateUpdate.ToString("dd.MM.yyyy")}";
+                    string extraInfo = $"Дата включения угрозы: {path.DateStartToString}\n\n" +
+                        $"Дата последнего изменения данных: {path.DateUpdateToString}";
                     BugInfo b = new BugInfo(commonInfo, effects, extraInfo);
 
                     b.Show();
@@ -425,68 +441,122 @@ namespace Lab2
                 Pagination(count);
             }
         }
-
-        private void UpdateData_Click(object sender, RoutedEventArgs e)
+        private void Update()
         {
             List<Bug> result = new List<Bug>();
             List<Bug> before = l;
-            string url = "https://bdu.fstec.ru/files/documents/thrlist.xlsx";
-            WebClient wc = new WebClient();
-            if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "data.xlsx")) File.Delete(AppDomain.CurrentDomain.BaseDirectory + "data.xlsx");
-            wc.DownloadFile(url, AppDomain.CurrentDomain.BaseDirectory + "data.xlsx");
-            if (CorrectFile(AppDomain.CurrentDomain.BaseDirectory + "data.xlsx"))
+            try
             {
-                ParsingFile(AppDomain.CurrentDomain.BaseDirectory + "data.xlsx");
-                List<Bug> after = l;
-
-                for (int i = 0; i < before.Count; i++)
+                if (!CheckForInternetConnection()) { throw new Exception(); }
+                else
                 {
-                    bool isExist = false;
-                    bool hasChanges = false;
-                    for (int j = 0; j < after.Count; j++)
+                    string url = "https://bdu.fstec.ru/files/documents/thrlist.xlsx";
+                    WebClient wc = new WebClient();
+
+                    if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "data.xlsx")) File.Delete(AppDomain.CurrentDomain.BaseDirectory + "data.xlsx");
+                    wc.DownloadFile(url, AppDomain.CurrentDomain.BaseDirectory + "data.xlsx");
+                    if (CorrectFile(AppDomain.CurrentDomain.BaseDirectory + "data.xlsx"))
                     {
-                        if (after[j].Id == before[i].Id)
+                        ParsingFile(AppDomain.CurrentDomain.BaseDirectory + "data.xlsx");
+                        List<Bug> after = l;
+
+                        for (int i = 0; i < before.Count; i++)
                         {
-                            isExist = true;
-                            if (before[i].Description != after[j].Description) { before[i].Description = "[БЫЛО]\n" + before[i].Description + "\n[СТАЛО]\n" + after[j].Description; hasChanges = true; }
-                            if (before[i].FullDescription != after[j].FullDescription) { before[i].FullDescription = "[БЫЛО]\n" + before[i].FullDescription + "\n[СТАЛО]\n" + after[j].FullDescription; hasChanges = true; }
-                            if (before[i].Source != after[j].Source) { before[i].Source = "[БЫЛО]\n" + before[i].Source + "\n[СТАЛО]\n" + after[j].Source; hasChanges = true; }
-                            if (before[i].ObjectDanger != after[j].ObjectDanger) { before[i].ObjectDanger = "[БЫЛО]\n" + before[i].ObjectDanger + "\n[СТАЛО]\n" + after[j].ObjectDanger; hasChanges = true; }
-                            if (before[i].AccessDanger != after[j].AccessDanger) { before[i].AccessDanger = "[БЫЛО]\n" + before[i].AccessDanger + "\n[СТАЛО]\n" + after[j].AccessDanger; hasChanges = true; }
-                            if (before[i].FullDanger != after[j].FullDanger) { before[i].FullDanger = "[БЫЛО]\n" + before[i].FullDanger + "\n[СТАЛО]\n" + after[j].FullDanger; hasChanges = true; }
-                            if (before[i].ConfDanger != after[j].ConfDanger) { before[i].ConfDanger = "[БЫЛО]\n" + before[i].ConfDanger + "\n[СТАЛО]\n" + after[j].ConfDanger; hasChanges = true; }
-                            //if (before[i].DateStart != after[j].DateStart) before[i].ConfDanger += "[БЫЛО]\n" + before[i].ConfDanger + "\n[СТАЛО]\n" + after[j].ConfDanger;
-                            before[i].DateUpdate = after[j].DateUpdate;
-                            if (hasChanges) result.Add(before[i]);
+                            bool isExist = false;
+                            bool hasChanges = false;
+                            for (int j = 0; j < after.Count; j++)
+                            {
+                                if (after[j].Id == before[i].Id)
+                                {
+                                    isExist = true;
+                                    if (before[i].Description != after[j].Description) { before[i].Description = "[БЫЛО]\n" + before[i].Description + "\n[СТАЛО]\n" + after[j].Description; hasChanges = true; }
+                                    if (before[i].FullDescription != after[j].FullDescription) { before[i].FullDescription = "[БЫЛО]\n" + before[i].FullDescription + "\n[СТАЛО]\n" + after[j].FullDescription; hasChanges = true; }
+                                    if (before[i].Source != after[j].Source) { before[i].Source = "[БЫЛО]\n" + before[i].Source + "\n[СТАЛО]\n" + after[j].Source; hasChanges = true; }
+                                    if (before[i].ObjectDanger != after[j].ObjectDanger) { before[i].ObjectDanger = "[БЫЛО]\n" + before[i].ObjectDanger + "\n[СТАЛО]\n" + after[j].ObjectDanger; hasChanges = true; }
+                                    if (before[i].AccessDanger != after[j].AccessDanger) { before[i].AccessDanger = "[БЫЛО]\n" + before[i].AccessDanger + "\n[СТАЛО]\n" + after[j].AccessDanger; hasChanges = true; }
+                                    if (before[i].FullDanger != after[j].FullDanger) { before[i].FullDanger = "[БЫЛО]\n" + before[i].FullDanger + "\n[СТАЛО]\n" + after[j].FullDanger; hasChanges = true; }
+                                    if (before[i].ConfDanger != after[j].ConfDanger) { before[i].ConfDanger = "[БЫЛО]\n" + before[i].ConfDanger + "\n[СТАЛО]\n" + after[j].ConfDanger; hasChanges = true; }
+                                    //if (before[i].DateStart != after[j].DateStart) before[i].ConfDanger += "[БЫЛО]\n" + before[i].ConfDanger + "\n[СТАЛО]\n" + after[j].ConfDanger;
+                                    before[i].DateUpdate = after[j].DateUpdate;
+                                    if (hasChanges) result.Add(before[i]);
+                                }
+                            }
+                            if (!isExist)
+                            {
+                                before[i].Id = "[УДАЛЕНА ЗАПИСЬ]\n" + before[i].Id;
+                                result.Add(before[i]);
+                            }
                         }
-                    }
-                    if (!isExist)
-                    {
-                        before[i].Id = "[УДАЛЕНА ЗАПИСЬ]\n" + before[i].Id;
-                        result.Add(before[i]);
+                        for (int i = 0; i < after.Count; i++)
+                        {
+                            bool isExist = false;
+                            for (int j = 0; j < before.Count; j++)
+                            {
+                                if (after[i].Id == before[j].Id)
+                                {
+                                    isExist = true;
+                                }
+                            }
+                            if (!isExist)
+                            {
+                                after[i].Id = "[ДОБАВЛЕНА ЗАПИСЬ]\n" + after[i].Id;
+                                result.Add(after[i]);
+                            }
+                        }
+
+
+                        UpdateWindow update = new UpdateWindow(result);
+                       
+                        File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "update.txt", DateTime.Now.ToString());
+                        
+                        update.Show();
+                        StartWindow();
                     }
                 }
-                for (int i = 0; i < after.Count; i++)
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка загрузки файла, возможно Вы не подключены к Интернет!", "Ошибка загрузки");
+            }
+        }
+        private void UpdateData_Click(object sender, RoutedEventArgs e)
+        {
+
+            Update();
+            
+        }
+        public bool CheckForInternetConnection()
+        {
+            try
+            {
+                using (var client = new WebClient())
+                using (var stream = client.OpenRead("http://www.google.com"))
                 {
-                    bool isExist = false;
-                    for (int j = 0; j < before.Count; j++)
-                    {
-                        if (after[i].Id == before[j].Id)
-                        {
-                            isExist = true;
-                        }
-                    }
-                    if (!isExist)
-                    {
-                        after[i].Id = "[ДОБАВЛЕНА ЗАПИСЬ]\n" + after[i].Id;
-                        result.Add(after[i]);
-                    }
+                    return true;
                 }
-
-
-                UpdateWindow update = new UpdateWindow(result);
-                update.Show();
-                StartWindow();
+            }
+            catch (WebException)
+            {
+                return false;
+            }
+        }
+        private void AutoUpdate()
+        {
+            if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "update.txt"))
+            {
+                DateTime lastDate = DateTime.Parse(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "update.txt"));
+                DateTime now = DateTime.Now;
+                if ((now - lastDate).TotalDays >= 30)
+                {
+                    File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "update.txt", DateTime.Now.ToString());
+                    Update();
+                }
+            }
+            else
+            {
+                //File.Create(AppDomain.CurrentDomain.BaseDirectory + "update.txt");
+                File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "update.txt",DateTime.Now.ToString());
             }
         }
     }
