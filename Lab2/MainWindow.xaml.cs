@@ -24,13 +24,16 @@ namespace Lab2
 {
     /// <summary>
     /// Логика взаимодействия для MainWindow.xaml
+    /// При открытии программы считывается файл update.txt. Если его нет, то он создается, в него записывается текущая дата.
+    /// Если разница дат >=30 дней, то происходит автообновление базы, файл update.txt перезаписывается.
+    /// При ручном обновлении файл update.txt также перезаписывается.
     /// </summary>
     public partial class MainWindow : Window
     {
         public static int CurrentStartNumber { get; set; } = 0;
         public static List<Bug> l = new List<Bug>();
         public static int PaginationCountValue { get; set; } = 15;
-        public void StartWindow()
+        public void StartWindow()//Данный метод отвечает за UI стартового окна
         {
             if (!System.IO.File.Exists(AppDomain.CurrentDomain.BaseDirectory + "data.xlsx"))
             {
@@ -86,7 +89,7 @@ namespace Lab2
             
         }
 
-        private void SearchButton_Click(object sender, RoutedEventArgs e)
+        private void SearchButton_Click(object sender, RoutedEventArgs e)//Данный метод отвечает за обработку нажатия на кнопку "Выбрать файл" при отсутствии файла в корневой папке программы
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.DefaultExt = "*.xlsx";
@@ -116,7 +119,7 @@ namespace Lab2
                 
             }
         }
-      private bool CorrectFile(string fileName)//Проверяет файл на корректность (кол-во колонок, в дальнейшем - названия колонок)
+      private bool CorrectFile(string fileName)//Проверяет файл на корректность (кол-во колонок, тип колонок)
         {
             
             Excel.Application xlApp = new Excel.Application();
@@ -143,12 +146,40 @@ namespace Lab2
                 xlApp.Quit();
                 if (cl != 10)
                 {
-                    throw new Exception();
+                    throw new Exception("Кол-во колонок неверное!");
                     
                 }
                 else
                 {
-                    return true;
+                    int cCnt;
+                    List<string> Types = new List<string>();
+                    for (cCnt = 1; cCnt <= cl; cCnt++)
+                    {
+                        if ((range.Cells[3, cCnt] as Excel.Range).Value is double)
+                        {
+
+                            Types.Add($"double");
+                        }
+                        else if ((range.Cells[3, cCnt] as Excel.Range).Value is string)
+                        {
+                            Types.Add($"string");
+                        }
+                        else if ((range.Cells[3, cCnt] as Excel.Range).Value is bool)
+                        {
+                            Types.Add($"bool");
+                        }
+                        else if ((range.Cells[3, cCnt] as Excel.Range).Value is DateTime)
+                        {
+                            Types.Add($"DateTime");
+                        }
+                        else
+                        {
+                            Types.Add($"Type");
+                        }
+                    }
+                    List<string> Correct = new List<string>() { "double", "string", "string", "string", "string", "double", "double", "double", "DateTime", "DateTime" };
+                    if(Correct.Equals(Types))return true;
+                    else throw new Exception("Типы колонок неверные!");
                 }
                             
                 
@@ -164,7 +195,7 @@ namespace Lab2
                 
             
         }
-        private void ParsingFile(string fileName)
+        private void ParsingFile(string fileName)//Данный метод отвечает за парсинг файла путем создания экземпляров класса Bug и их сессионного хранения в статическом списке l
         {
             if (l.Count > 0) l = new List<Bug>();
             Excel.Application xlApp = new Excel.Application();
@@ -222,7 +253,7 @@ namespace Lab2
             }
         }
 
-        private void DownloadButton_Click(object sender, RoutedEventArgs e)
+        private void DownloadButton_Click(object sender, RoutedEventArgs e)//Данный метод отвечает за обработку нажатия на кнопку "Загрузить из Интернет" при отсутствии файла в корневой папке программы
         {
             try
             {
@@ -245,7 +276,7 @@ namespace Lab2
             }
         }
 
-        private void WholeData_MouseUp(object sender, MouseButtonEventArgs e)
+        private void WholeData_MouseUp(object sender, MouseButtonEventArgs e)//Данный метод отвечает за отображение полной информации об угрозе при нажатии на нее в DataGrid
         {
             try
             {
@@ -269,13 +300,13 @@ namespace Lab2
                 MessageBox.Show($"Ошибка при открытии подробной информации об угрозе: \n{f.Message}\nПопробуйте еще раз...","Ошибка открытия");
             }
         }
-
-        //private void ShowTypes(object sender, RoutedEventArgs e)
+        //Это я для себя определял, какой тип имеет каждая колонка
+        //private void ShowTypes(object sender, RoutedEventArgs e) 
         //{
         //    string fileName = AppDomain.CurrentDomain.BaseDirectory + "data.xlsx";
         //    Excel.Application xlApp = new Excel.Application();
         //    Excel.Workbook xlWorkBook = xlApp.Workbooks.Open(fileName, 0, true, 5, "", "", true, Microsoft.Office.Interop.Excel.XlPlatform.xlWindows, "\t", false, false, 0, true, 1, 0);
-            
+
 
         //        Excel.Worksheet xlWorkSheet;
         //        Excel.Range range;
@@ -330,17 +361,19 @@ namespace Lab2
         //    string res = "";
         //    foreach (var s in Types) res += s;
         //    MessageBox.Show(res);
-                
-            
+
+
         //}
 
-        private void SaveData_Click(object sender, RoutedEventArgs e)
+        private void SaveData_Click(object sender, RoutedEventArgs e)//Метод отвечает за сохранения файла по запросу пользователя
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog();
             saveFileDialog.Filter = "Excel File|*.xlsx";
             saveFileDialog.Title = "Выберите путь для сохранения базы";
             if (saveFileDialog.ShowDialog() == true)
             {
+                if (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + "data.xlsx")) MessageBox.Show("Файла не существует в корневом каталоге!", "Ошибка сохранения");
+                else { 
                 if (File.Exists(saveFileDialog.FileName))
                 {
                     try
@@ -348,17 +381,18 @@ namespace Lab2
                         File.Delete(saveFileDialog.FileName);
                         File.Copy(AppDomain.CurrentDomain.BaseDirectory + "data.xlsx", saveFileDialog.FileName);
                     }
-                    catch(Exception k)
+                    catch (Exception k)
                     {
                         MessageBox.Show($"Возникла ошибка при сохранении файла: \n{k.Message}");
                     }
                 }
                 else File.Copy(AppDomain.CurrentDomain.BaseDirectory + "data.xlsx", saveFileDialog.FileName);
+                }
             }
 
                
         }
-        private void Pagination(int count)
+        private void Pagination(int count)//Метод отвечает за пагинацию
         {
             List<Bug> show = new List<Bug>();
             if (CurrentStartNumber == 0 && LeftButton != null && RightButton != null && CurrentStartNumber + count >= l.Count) { LeftButton.IsEnabled = false; RightButton.IsEnabled = false; }
