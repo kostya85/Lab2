@@ -30,6 +30,7 @@ namespace Lab2
         {
             l = list;
             InitializeComponent();
+            if (l.Count == 0) UpdateData.Visibility = Visibility.Collapsed;
             Info.Text =$"Обновление прошло успешно!\nВсего обновлено/ добавлено записей: {l.Count}";
             UpdateData.AutoGenerateColumns = false;
             UpdateData.Columns.Add(new DataGridTextColumn

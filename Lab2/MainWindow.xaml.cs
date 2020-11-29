@@ -19,6 +19,7 @@ using Excel = Microsoft.Office.Interop.Excel;
 using System.Data;
 using System.Net;
 using System.Net.NetworkInformation;
+using System.Threading;
 
 namespace Lab2
 {
@@ -62,10 +63,10 @@ namespace Lab2
                     ParsingFile(AppDomain.CurrentDomain.BaseDirectory + "data.xlsx");
                     Pagination(PaginationCountValue);
                 }
-                else
-                {
-                    MessageBox.Show("Выбранный Вами документ не является корректным!", "Ошибка распознавания");
-                }
+                //else
+                //{
+                //    MessageBox.Show("Выбранный Вами документ не является корректным!", "Ошибка распознавания");
+                //}
             }
         }
         public MainWindow()
@@ -119,7 +120,7 @@ namespace Lab2
                 
             }
         }
-      private bool CorrectFile(string fileName)//Проверяет файл на корректность (кол-во колонок, тип колонок)
+      private bool CorrectFile(string fileName)//Проверяет файл на корректность (кол-во колонок)
         {
             
             Excel.Application xlApp = new Excel.Application();
@@ -129,7 +130,7 @@ namespace Lab2
 
                 Excel.Worksheet xlWorkSheet;
                 Excel.Range range;
-                List<Bug> l = new List<Bug>();
+                //List<Bug> l = new List<Bug>();
                 
                 
                 
@@ -151,35 +152,8 @@ namespace Lab2
                 }
                 else
                 {
-                    int cCnt;
-                    List<string> Types = new List<string>();
-                    for (cCnt = 1; cCnt <= cl; cCnt++)
-                    {
-                        if ((range.Cells[3, cCnt] as Excel.Range).Value is double)
-                        {
-
-                            Types.Add($"double");
-                        }
-                        else if ((range.Cells[3, cCnt] as Excel.Range).Value is string)
-                        {
-                            Types.Add($"string");
-                        }
-                        else if ((range.Cells[3, cCnt] as Excel.Range).Value is bool)
-                        {
-                            Types.Add($"bool");
-                        }
-                        else if ((range.Cells[3, cCnt] as Excel.Range).Value is DateTime)
-                        {
-                            Types.Add($"DateTime");
-                        }
-                        else
-                        {
-                            Types.Add($"Type");
-                        }
-                    }
-                    List<string> Correct = new List<string>() { "double", "string", "string", "string", "string", "double", "double", "double", "DateTime", "DateTime" };
-                    if(Correct.Equals(Types))return true;
-                    else throw new Exception("Типы колонок неверные!");
+                    return true;
+                   
                 }
                             
                 
@@ -189,6 +163,7 @@ namespace Lab2
                 MessageBox.Show("Ошибка распознавания документа: " + e.Message, "Ошибка распознавания");
                 return false;
             }
+            
            
                 
                 
@@ -593,5 +568,8 @@ namespace Lab2
                 File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "update.txt",DateTime.Now.ToString());
             }
         }
+
+        
+        
     }
 }
