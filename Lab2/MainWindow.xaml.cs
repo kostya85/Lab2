@@ -120,7 +120,7 @@ namespace Lab2
                 
             }
         }
-      private bool CorrectFile(string fileName)//Проверяет файл на корректность (кол-во колонок)
+      private bool CorrectFile(string fileName)//Проверяет файл на корректность (кол-во колонок, кол-во рядов, тип колонок)
         {
             
             Excel.Application xlApp = new Excel.Application();
@@ -143,27 +143,76 @@ namespace Lab2
                 range = xlWorkSheet.UsedRange;
                 rw = range.Rows.Count;
                 cl = range.Columns.Count;
-                xlWorkBook.Close(true, fileName, null);
-                xlApp.Quit();
+
                 if (cl != 10)
                 {
                     throw new Exception("Кол-во колонок неверное!");
-                    
+
+                }
+                else if (rw < 2)
+                {
+                    throw new Exception("Должно быть минимум 2 служебных ряда!");
                 }
                 else
                 {
-                    return true;
-                   
+                    List<string> Types = new List<string>();
+                    //return true;
+                    for (int cCnt = 1; cCnt <= cl; cCnt++)
+                    {
+                        if ((range.Cells[3, cCnt] as Excel.Range).Value is double)
+                        {
+
+                            Types.Add("double");
+                        }
+                        else if ((range.Cells[3, cCnt] as Excel.Range).Value is string)
+                        {
+                            Types.Add("string");
+                        }
+
+                        else if ((range.Cells[3, cCnt] as Excel.Range).Value is DateTime)
+                        {
+                            Types.Add("DateTime");
+                        }
+                        else
+                        {
+                            Types.Add("Type");
+                        }
+
+                    }
+                    List<string> Correct = new List<string>() { "double","string", "string", "string", "string","double", "double","double","DateTime","DateTime" };
+                    bool c = true;
+                    for(int i = 0; i < Types.Count; i++)
+                    {
+                        if (Types[i] != Correct[i])
+                        {
+                            c = false;
+                            break;
+                        }
+                    }
+                    if (c)
+                    {
+                        
+                        return true;
+                    }
+                    else
+                    {
+                        throw new Exception("Типы колонок неверные!");
+                    }
+
                 }
-                            
-                
+
+
             }
             catch (Exception e)
             {
                 MessageBox.Show("Ошибка распознавания документа: " + e.Message, "Ошибка распознавания");
                 return false;
             }
-            
+            finally
+            {
+                xlWorkBook.Close(true, fileName, null);
+                xlApp.Quit();
+            }
            
                 
                 
